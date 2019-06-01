@@ -11,6 +11,7 @@ namespace Demo
             using (TerminalWindow tw = new TerminalWindow())
             {
                 tw.Init();
+                
             }
         }
     }

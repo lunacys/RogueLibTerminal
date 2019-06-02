@@ -5,6 +5,7 @@ namespace RogueLibTerminal
     public struct Point : IEquatable<Point>
     {
         public static Point Zero => new Point(0);
+        public static Point Unit => new Point(1);
 
         public int X;
         public int Y;

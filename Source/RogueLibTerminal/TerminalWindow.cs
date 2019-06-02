@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using SDL2;
 
 using static SDL2.SDL;
@@ -79,8 +80,14 @@ namespace RogueLibTerminal
 
         public void Init()
         {
+            Console.WriteLine("Initializing SDL");
+
             if (SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING) < 0)
                 throw new Exception($"Init exception: {SDL.SDL_GetError()}");
+
+            Console.WriteLine("Done initializing SDL");
+
+            Console.WriteLine("Creating a new SDL window");
 
             _windowPtr = SDL.SDL_CreateWindow(Title,
                 WindowPosition?.X ?? SDL_WINDOWPOS_CENTERED,
@@ -91,14 +98,20 @@ namespace RogueLibTerminal
                     ? SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE
                     : SDL_WindowFlags.SDL_WINDOW_SHOWN
                     );
-
+            
             if (_windowPtr == null)
                 throw new Exception($"Window creation exception: {SDL.SDL_GetError()}");
+
+            Console.WriteLine("Successfully created a new SDL window");
+
+            Console.WriteLine("Creating global renderer");
 
             _renderer = SDL_CreateRenderer(_windowPtr, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
 
             if (_renderer == null)
                 throw new Exception($"Create renderer exception: {SDL_GetError()}");
+
+            Console.WriteLine("Done creating global renderer");
 
             SDL_SetRenderDrawColor(_renderer, BackgroundColor.R, BackgroundColor.G, BackgroundColor.B, BackgroundColor.A);
 
@@ -113,6 +126,8 @@ namespace RogueLibTerminal
             _screenSurface = SDL.SDL_GetWindowSurface(_windowPtr);
 
             _isRunning = true;
+
+            Console.WriteLine("Initialization done, running main cycle");
 
             while (_isRunning)
             {
@@ -144,6 +159,19 @@ namespace RogueLibTerminal
                     _isRunning = false;
                 }
             }
+            else if (_lastEvent.type == SDL_EventType.SDL_WINDOWEVENT)
+            {
+                if (_lastEvent.window.windowEvent == SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED) {
+                    Console.WriteLine("Resize window");
+                    ResizeWindow(_lastEvent.window.data1, _lastEvent.window.data2);
+                }
+            }
+        }
+
+        private void ResizeWindow(int w, int h)
+        {
+            _viewport.w = w;
+            _viewport.h = h;
         }
 
         private void Render()

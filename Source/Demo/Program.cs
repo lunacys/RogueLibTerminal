@@ -1,6 +1,8 @@
 ﻿using System;
 using RogueLibTerminal;
 
+//using Console = RogueLibTerminal.Terminal;
+
 namespace Demo
 {
     class Program
@@ -8,11 +10,13 @@ namespace Demo
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
             using (TerminalWindow tw = new TerminalWindow())
             {
                 tw.Init();
-                
             }
+
+            //Console.Destroy();
         }
     }
 }

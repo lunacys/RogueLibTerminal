@@ -27,8 +27,32 @@ namespace RogueLibTerminal
 
         public int BufferWidth { get; set; }
         public int BufferHeight { get; set; }
-        public int WindowWidth { get; set; }
-        public int WindowHeight { get; set; }
+        private int _windowWidth;
+        public int WindowWidth
+        {
+            get => !_isInitialized ? _windowWidth : WindowSize.X;
+            set
+            {
+                if (_isInitialized)
+                    WindowSize = new Point(value, WindowHeight);
+                else
+                    _windowWidth = value;
+            }
+        }
+
+        private int _windowHeight;
+        private bool _isInitialized;
+        public int WindowHeight
+        {
+            get => !_isInitialized ? _windowHeight : WindowSize.Y;
+            set
+            {
+                if (_isInitialized)
+                    WindowSize = new Point(WindowWidth, value);
+                else
+                    _windowHeight = value;
+            }
+        }
         public TerminalColor ForegroundColor { get; set; }
         public TerminalColor BackgroundColor { get; set; }
         public TerminalColor DefaultForegroundColor { get; set; }
@@ -37,20 +61,38 @@ namespace RogueLibTerminal
         public int CursorLeft { get; set; }
         public int CursorTop { get; set; }
         public Point CursorSize { get; set; }
+        public Point WindowSize
+        {
+            get => GetWindowSize();
+            set => SDL_SetWindowSize(_windowPtr, value.X, value.Y);
+        }
         public bool CursorVisible { get; set; }
         public bool KeyAvailable { get; set; }
-        public string Title { get; set; }
+        private string _title;
+        public string Title
+        {
+            get => !_isInitialized ? _title : SDL_GetWindowTitle(_windowPtr);
+            set
+            {
+                if (_isInitialized)
+                    SDL_SetWindowTitle(_windowPtr, value);
+                else
+                    _title = value;
+            }
+        }
+
         public Point BufferPosition { get; set; }
         public Point BufferSize { get; set; }
         public Point? WindowPosition { get; set; }
         public bool IsResizable { get; set; }
+        public bool CloseOnEscape { get; set; }
 
-        public event EventHandler KeyPress;
-        public event EventHandler KeyDown;
-        public event EventHandler KeyUp;
-        public event EventHandler MouseButtonPress;
-        public event EventHandler MouseButtonDown;
-        public event EventHandler MouseButtonUp;
+        public event EventHandler<OnKeyEventEventHandler> KeyPress;
+        public event EventHandler<OnKeyEventEventHandler> KeyDown;
+        public event EventHandler<OnKeyEventEventHandler> KeyUp;
+        public event EventHandler<OnMouseEventEventHandler> MouseButtonPress;
+        public event EventHandler<OnMouseEventEventHandler> MouseButtonDown;
+        public event EventHandler<OnMouseEventEventHandler> MouseButtonUp;
 
         public TerminalWindow()
         {
@@ -81,21 +123,22 @@ namespace RogueLibTerminal
         public void Init()
         {
             Console.WriteLine("Initializing SDL");
+            _isInitialized = false;
 
-            if (SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING) < 0)
+            if (SDL_Init(SDL.SDL_INIT_EVERYTHING) < 0)
                 throw new Exception($"Init exception: {SDL.SDL_GetError()}");
 
             Console.WriteLine("Done initializing SDL");
 
             Console.WriteLine("Creating a new SDL window");
 
-            _windowPtr = SDL.SDL_CreateWindow(Title,
+            _windowPtr = SDL_CreateWindow(Title,
                 WindowPosition?.X ?? SDL_WINDOWPOS_CENTERED,
                 WindowPosition?.Y ?? SDL_WINDOWPOS_CENTERED,
                 WindowWidth,
                 WindowHeight,
                 IsResizable 
-                    ? SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE
+                    ? SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL_WindowFlags.SDL_WINDOW_RESIZABLE
                     : SDL_WindowFlags.SDL_WINDOW_SHOWN
                     );
             
@@ -123,10 +166,11 @@ namespace RogueLibTerminal
                 h = WindowHeight 
             };
 
-            _screenSurface = SDL.SDL_GetWindowSurface(_windowPtr);
+            _screenSurface = SDL_GetWindowSurface(_windowPtr);
 
             _isRunning = true;
 
+            _isInitialized = true;
             Console.WriteLine("Initialization done, running main cycle");
 
             while (_isRunning)
@@ -134,6 +178,13 @@ namespace RogueLibTerminal
                 Update();
                 Render();
             }
+        }
+
+        private Point GetWindowSize()
+        {
+            SDL_GetWindowSize(_windowPtr, out var w, out var h);
+
+            return new Point(w, h);
         }
 
         private unsafe SDL_Surface GetSurface()
@@ -145,7 +196,9 @@ namespace RogueLibTerminal
         private void Update()
         {
             SDL_PollEvent(out _lastEvent);
-
+            //int numkeys;
+            //var state = SDL_GetKeyboardState(out numkeys);
+            
             if (_lastEvent.type == SDL_EventType.SDL_QUIT)
             {
                 _isRunning = false;
@@ -156,8 +209,25 @@ namespace RogueLibTerminal
 
                 if (keycode == SDL_Keycode.SDLK_ESCAPE)
                 {
-                    _isRunning = false;
+                    if (CloseOnEscape)
+                        _isRunning = false;
                 }
+                
+                KeyDown?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode)));
+            }
+            else if (_lastEvent.type == SDL_EventType.SDL_KEYUP)
+            {
+                SDL_Keycode keycode = _lastEvent.key.keysym.sym;
+
+                KeyUp?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode)));
+            }
+            else if (_lastEvent.type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
+            {
+                MouseButtonDown?.Invoke(this, new OnMouseEventEventHandler());
+            }
+            else if (_lastEvent.type == SDL_EventType.SDL_MOUSEBUTTONUP)
+            {
+                MouseButtonUp?.Invoke(this, new OnMouseEventEventHandler());
             }
             else if (_lastEvent.type == SDL_EventType.SDL_WINDOWEVENT)
             {

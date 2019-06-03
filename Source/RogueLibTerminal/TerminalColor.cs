@@ -60,6 +60,85 @@ namespace RogueLibTerminal
             };
         }
 
+        public static implicit operator TerminalColor(ConsoleColor color)
+        {
+	        switch (color)
+	        {
+		        case ConsoleColor.Black:
+			        return Black;
+		        case ConsoleColor.Blue:
+			        return Blue;
+		        case ConsoleColor.Cyan:
+			        return Cyan;
+		        case ConsoleColor.DarkBlue:
+			        return DarkBlue;
+		        case ConsoleColor.DarkCyan:
+			        return DarkCyan;
+		        case ConsoleColor.DarkGray:
+			        return DarkGray;
+		        case ConsoleColor.DarkGreen:
+			        return DarkGreen;
+		        case ConsoleColor.DarkMagenta:
+			        return DarkMagenta;
+		        case ConsoleColor.DarkRed:
+			        return DarkRed;
+		        case ConsoleColor.DarkYellow:
+			        return DarkYellow;
+		        case ConsoleColor.Gray:
+			        return Gray;
+		        case ConsoleColor.Green:
+			        return Green;
+		        case ConsoleColor.Magenta:
+			        return Magenta;
+		        case ConsoleColor.Red:
+			        return Red;
+		        case ConsoleColor.White:
+			        return White;
+		        case ConsoleColor.Yellow:
+			        return Yellow;
+		        default:
+			        throw new ArgumentOutOfRangeException(nameof(color), color, null);
+	        }
+        }
+
+        public static implicit operator ConsoleColor(TerminalColor color)
+        {
+	        if (color.Equals(Black))
+		        return ConsoleColor.Black;
+	        if (color.Equals(White))
+		        return ConsoleColor.White;
+	        if (color.Equals(Red))
+		        return ConsoleColor.Red;
+	        if (color.Equals(Green))
+		        return ConsoleColor.Green;
+	        if (color.Equals(Blue))
+		        return ConsoleColor.Blue;
+	        if (color.Equals(DarkGray))
+		        return ConsoleColor.DarkGray;
+	        if (color.Equals(Gray))
+		        return ConsoleColor.Gray;
+	        if (color.Equals(Cyan))
+		        return ConsoleColor.Cyan;
+	        if (color.Equals(Magenta))
+		        return ConsoleColor.Magenta;
+	        if (color.Equals(Yellow))
+		        return ConsoleColor.Yellow;
+	        if (color.Equals(DarkCyan))
+		        return ConsoleColor.DarkCyan;
+	        if (color.Equals(DarkMagenta))
+		        return ConsoleColor.DarkMagenta;
+	        if (color.Equals(DarkYellow))
+		        return ConsoleColor.DarkYellow;
+	        if (color.Equals(DarkRed))
+		        return ConsoleColor.DarkRed;
+	        if (color.Equals(DarkGreen))
+		        return ConsoleColor.DarkGreen;
+	        if (color.Equals(DarkBlue))
+		        return ConsoleColor.DarkBlue;
+
+	        return ConsoleColor.White;
+        }
+
         public bool Equals(TerminalColor other)
         {
             return R == other.R && G == other.G && B == other.B && A == other.A;

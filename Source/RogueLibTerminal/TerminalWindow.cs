@@ -212,14 +212,14 @@ namespace RogueLibTerminal
                     if (CloseOnEscape)
                         _isRunning = false;
                 }
-                
-                KeyDown?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode)));
+				
+                KeyDown?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode), KeyModifierMapper.MapSdlMods(_lastEvent.key.keysym.mod)));
             }
             else if (_lastEvent.type == SDL_EventType.SDL_KEYUP)
             {
                 SDL_Keycode keycode = _lastEvent.key.keysym.sym;
 
-                KeyUp?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode)));
+                KeyUp?.Invoke(this, new OnKeyEventEventHandler(KeyMapper.MapSdlKey(keycode), KeyModifierMapper.MapSdlMods(_lastEvent.key.keysym.mod)));
             }
             else if (_lastEvent.type == SDL_EventType.SDL_MOUSEBUTTONDOWN)
             {

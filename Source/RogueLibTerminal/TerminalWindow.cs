@@ -114,10 +114,10 @@ namespace RogueLibTerminal
             WindowHeight = 300;
             IsResizable = true;
 
-            ForegroundColor = TerminalColor.White;
-            BackgroundColor = TerminalColor.Black;
-            DefaultForegroundColor = TerminalColor.White;
-            DefaultBackgroundColor = TerminalColor.Black;
+            ForegroundColor = Console.ForegroundColor;
+            BackgroundColor = Console.BackgroundColor;
+            DefaultForegroundColor = Console.ForegroundColor;
+            DefaultBackgroundColor = Console.BackgroundColor;
         }
 
         public void Init()

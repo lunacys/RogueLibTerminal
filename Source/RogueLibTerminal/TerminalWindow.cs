@@ -111,8 +111,8 @@ namespace RogueLibTerminal
             Title = Process.GetCurrentProcess().MainModule?.FileName;
             BufferPosition = Point.Zero;
             RestoreColorsAfterWrite = false;
-            WindowWidth = 800;
-            WindowHeight = 300;
+            WindowWidth = 976;
+            WindowHeight = 418;
             IsResizable = true;
             CloseOnEscape = true;
 
@@ -173,7 +173,7 @@ namespace RogueLibTerminal
 
             _screenSurface = SDL_GetWindowSurface(_windowPtr);
 			
-            _terminalFont = TTF_OpenFont(Path.Combine("Content", "pixelfont.ttf"), 12);
+            _terminalFont = TTF_OpenFont(Path.Combine("Content", "FiraCode-Regular.ttf"), 14);
 			
             _isRunning = true;
 
@@ -257,6 +257,8 @@ namespace RogueLibTerminal
         {
             _viewport.w = w;
             _viewport.h = h;
+
+            Console.WriteLine($"New size: {w}, {h}");
         }
 
         private void Render()
@@ -264,13 +266,19 @@ namespace RogueLibTerminal
             SDL_RenderClear(_renderer);
             SDL_RenderSetViewport(_renderer, ref _viewport);
 
-            DrawGrid();
+            //DrawGrid();
             //SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
             //SDL_RenderFillRect(_renderer, ref rect);
             //SDL_SetRenderDrawColor(_renderer, 127, 127, 127, 255);
             //SDL_FillRect(_renderer, ref rect, SDL.SDL_MapRGB(GetSurface().format, 255, 0, 0));
-            IntPtr surface = TTF_RenderText_Solid(_terminalFont, "Test!", ForegroundColor);
+            IntPtr surface = TTF_RenderText_Shaded(_terminalFont, "Test!!!!!! => <= !=\nNew line\nAnother line\nWew", ForegroundColor, BackgroundColor);
+			
             IntPtr texture = SDL_CreateTextureFromSurface(_renderer, surface);
+            int texW = 0;
+            int texH = 0;
+            uint format;
+	        int access;
+            SDL_QueryTexture(texture, out format, out access, out texW, out texH);
             SDL_Rect srcRect = new SDL_Rect
             {
 	            x = 0,
@@ -280,12 +288,14 @@ namespace RogueLibTerminal
             };
             SDL_Rect dstRect = new SDL_Rect
             {
-	            x = 16,
-	            y = 16,
-	            w = 128,
-	            h = 64
+	            x = 2,
+	            y = 2,
+	            w = texW,
+	            h = texH
             };
-            SDL_RenderCopy(_renderer, texture, ref srcRect, ref dstRect);
+            SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dstRect);
+			SDL_DestroyTexture(texture);
+			SDL_FreeSurface(surface);
 
             SDL_RenderPresent(_renderer);
         }

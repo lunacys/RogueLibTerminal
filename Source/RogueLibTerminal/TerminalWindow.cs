@@ -149,7 +149,7 @@ namespace RogueLibTerminal
                     );
             
             if (_windowPtr == null)
-                throw new Exception($"WindowInternal creation exception: {SDL.SDL_GetError()}");
+                throw new Exception($"Window creation exception: {SDL.SDL_GetError()}");
 
             Console.WriteLine("Successfully created a new SDL window");
 
@@ -185,6 +185,33 @@ namespace RogueLibTerminal
             {
                 Update();
                 Render();
+            }
+        }
+
+        public void WriteLine(string value)
+        {
+            var lines = value.Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                IntPtr surface = TTF_RenderText_Shaded(_terminalFont, lines[i], ForegroundColor, BackgroundColor);
+
+                IntPtr texture = SDL_CreateTextureFromSurface(_renderer, surface);
+                int texW = 0;
+                int texH = 0;
+                uint format;
+                int access;
+                SDL_QueryTexture(texture, out format, out access, out texW, out texH);
+                SDL_Rect dstRect = new SDL_Rect
+                {
+                    x = 0,
+                    y = -4 + i * 15,
+                    w = texW,
+                    h = texH
+                };
+                SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dstRect);
+                SDL_DestroyTexture(texture);
+                SDL_FreeSurface(surface);
             }
         }
 
@@ -272,31 +299,7 @@ namespace RogueLibTerminal
             //SDL_RenderFillRect(_renderer, ref rect);
             //SDL_SetRenderDrawColor(_renderer, 127, 127, 127, 255);
             //SDL_FillRect(_renderer, ref rect, SDL.SDL_MapRGB(GetSurface().format, 255, 0, 0));
-            IntPtr surface = TTF_RenderText_Shaded(_terminalFont, "Test!!!!!! => <= !=\nNew line\nAnother line\nWew", ForegroundColor, BackgroundColor);
-			
-            IntPtr texture = SDL_CreateTextureFromSurface(_renderer, surface);
-            int texW = 0;
-            int texH = 0;
-            uint format;
-	        int access;
-            SDL_QueryTexture(texture, out format, out access, out texW, out texH);
-            SDL_Rect srcRect = new SDL_Rect
-            {
-	            x = 0,
-	            y = 0,
-	            w = 128,
-	            h = 64
-            };
-            SDL_Rect dstRect = new SDL_Rect
-            {
-	            x = 2,
-	            y = 2,
-	            w = texW,
-	            h = texH
-            };
-            SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dstRect);
-			SDL_DestroyTexture(texture);
-			SDL_FreeSurface(surface);
+            WriteLine("Test\nTest!\nTEST!!!");
 
             SDL_RenderPresent(_renderer);
         }

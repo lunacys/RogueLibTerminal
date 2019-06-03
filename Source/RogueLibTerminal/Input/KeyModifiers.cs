@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RogueLibTerminal
+namespace RogueLibTerminal.Input
 {
 	[Flags]
 	public enum KeyModifiers

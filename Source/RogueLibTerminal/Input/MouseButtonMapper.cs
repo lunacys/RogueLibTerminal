@@ -1,6 +1,6 @@
 ﻿using SDL2;
 
-namespace RogueLibTerminal
+namespace RogueLibTerminal.Input
 {
     internal static class MouseButtonMapper
     {

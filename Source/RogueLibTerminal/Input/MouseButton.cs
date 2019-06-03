@@ -1,4 +1,4 @@
-﻿namespace RogueLibTerminal
+﻿namespace RogueLibTerminal.Input
 {
     public enum MouseButton
     {

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using RogueLibTerminal.Input;
 using SDL2;
 
 using static SDL2.SDL;
@@ -148,7 +149,7 @@ namespace RogueLibTerminal
                     );
             
             if (_windowPtr == null)
-                throw new Exception($"Window creation exception: {SDL.SDL_GetError()}");
+                throw new Exception($"WindowInternal creation exception: {SDL.SDL_GetError()}");
 
             Console.WriteLine("Successfully created a new SDL window");
 

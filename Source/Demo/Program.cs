@@ -13,6 +13,10 @@ namespace Demo
 
             using (TerminalWindow tw = new TerminalWindow())
             {
+	            tw.KeyDown += (sender, handler) =>
+	            {
+		            Console.WriteLine($"Pressed button: {handler.Key}, Mods: {handler.Modifiers}");
+	            };
                 tw.Init();
             }
 

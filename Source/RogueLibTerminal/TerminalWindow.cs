@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using SDL2;
 
 using static SDL2.SDL;
+using static SDL2.SDL_ttf;
 
 namespace RogueLibTerminal
 {
@@ -12,14 +15,10 @@ namespace RogueLibTerminal
         private IntPtr _windowPtr;
         private IntPtr _screenSurface;
         private IntPtr _renderer;
+        private IntPtr _terminalFont;
 
         private SDL_Rect _viewport;
         private SDL_Event _lastEvent;
-        public SDL_Rect Viewport
-        {
-            get => _viewport;
-            set => _viewport = value;
-        }
 
         private bool _isRunning;
 
@@ -94,6 +93,8 @@ namespace RogueLibTerminal
         public event EventHandler<OnMouseEventEventHandler> MouseButtonDown;
         public event EventHandler<OnMouseEventEventHandler> MouseButtonUp;
 
+		
+
         public TerminalWindow()
         {
             RestoreDefaults();
@@ -113,6 +114,7 @@ namespace RogueLibTerminal
             WindowWidth = 800;
             WindowHeight = 300;
             IsResizable = true;
+            CloseOnEscape = true;
 
             ForegroundColor = Console.ForegroundColor;
             BackgroundColor = Console.BackgroundColor;
@@ -129,6 +131,9 @@ namespace RogueLibTerminal
                 throw new Exception($"Init exception: {SDL.SDL_GetError()}");
 
             Console.WriteLine("Done initializing SDL");
+
+			if (TTF_Init() < 0)
+				throw new Exception($"TTF Init Exception: {SDL_GetError()}");
 
             Console.WriteLine("Creating a new SDL window");
 
@@ -158,7 +163,7 @@ namespace RogueLibTerminal
 
             SDL_SetRenderDrawColor(_renderer, BackgroundColor.R, BackgroundColor.G, BackgroundColor.B, BackgroundColor.A);
 
-            Viewport = new SDL_Rect
+            _viewport = new SDL_Rect
             {
                 x = 0,
                 y = 0,
@@ -167,7 +172,9 @@ namespace RogueLibTerminal
             };
 
             _screenSurface = SDL_GetWindowSurface(_windowPtr);
-
+			
+            _terminalFont = TTF_OpenFont(Path.Combine("Content", "pixelfont.ttf"), 12);
+			
             _isRunning = true;
 
             _isInitialized = true;
@@ -182,7 +189,15 @@ namespace RogueLibTerminal
 
         private Point GetWindowSize()
         {
-            SDL_GetWindowSize(_windowPtr, out var w, out var h);
+	        int w, h;
+
+			if (_isInitialized)
+				SDL_GetWindowSize(_windowPtr, out w, out h);
+			else
+			{
+				w = WindowWidth;
+				h = WindowHeight;
+			}
 
             return new Point(w, h);
         }
@@ -254,6 +269,23 @@ namespace RogueLibTerminal
             //SDL_RenderFillRect(_renderer, ref rect);
             //SDL_SetRenderDrawColor(_renderer, 127, 127, 127, 255);
             //SDL_FillRect(_renderer, ref rect, SDL.SDL_MapRGB(GetSurface().format, 255, 0, 0));
+            IntPtr surface = TTF_RenderText_Solid(_terminalFont, "Test!", ForegroundColor);
+            IntPtr texture = SDL_CreateTextureFromSurface(_renderer, surface);
+            SDL_Rect srcRect = new SDL_Rect
+            {
+	            x = 0,
+	            y = 0,
+	            w = 128,
+	            h = 64
+            };
+            SDL_Rect dstRect = new SDL_Rect
+            {
+	            x = 16,
+	            y = 16,
+	            w = 128,
+	            h = 64
+            };
+            SDL_RenderCopy(_renderer, texture, ref srcRect, ref dstRect);
 
             SDL_RenderPresent(_renderer);
         }
@@ -287,6 +319,8 @@ namespace RogueLibTerminal
         private void ReleaseUnmanagedResources()
         {
             // TODO release unmanaged resources here
+			TTF_CloseFont(_terminalFont);
+			TTF_Quit();
             Console.WriteLine("Destroying renderer");
             SDL_DestroyRenderer(_renderer);
             Console.WriteLine("Destroying window");

@@ -2,6 +2,7 @@
 using System.Threading;
 using RogueLibTerminal.Logging;
 using static SDL2.SDL;
+using static SDL2.SDL_ttf;
 
 namespace RogueLibTerminal
 {
@@ -84,6 +85,13 @@ namespace RogueLibTerminal
                 throw new Exception($"Init exception: {SDL_GetError()}");
 
             LogHelper.Log("[RogueLibTerminal.Window]: Done initializing SDL");
+
+            LogHelper.Log("[RogueLibTerminal.Window]: Initializing SDL2_ttf");
+
+			if (TTF_Init() < 0)
+				throw new Exception($"TTF Init exception");
+
+			LogHelper.Log("[RogueLibTerminal.Window]: Initialized SDL2_ttf successfully");
 
             LogHelper.Log("[RogueLibTerminal.Window]: Creating a new window..");
 

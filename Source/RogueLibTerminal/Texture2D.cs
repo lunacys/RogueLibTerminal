@@ -1,18 +1,30 @@
-﻿namespace RogueLibTerminal
+﻿using System;
+
+namespace RogueLibTerminal
 {
     public class Texture2D
     {
         public int Width { get; set; }
         public int Height { get; set; }
 
+        private IntPtr _dataPtr;
+
         public Texture2D(int width, int height)
         {
             Width = width;
             Height = height;
-
-            //SDL2.SDL_image.IMG_LoadTexture()
         }
 
+        internal Texture2D(int width, int height, IntPtr dataPtr)
+        {
+	        Width = width;
+	        Height = height;
+	        _dataPtr = dataPtr;
+        }
 
+        internal IntPtr GetAsPointer()
+        {
+	        return _dataPtr;
+        }
     }
 }

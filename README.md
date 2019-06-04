@@ -27,3 +27,7 @@ Although this library is written primarily for creating rogue-like games, this c
 In order to build RogueLibTerminal you need to install .NET Standard 2.0 SDK or higher.
 
 Demo project uses .NET Core 2.2.
+
+## API
+
+Terminal API can be found [here](TerminalAPI.md).

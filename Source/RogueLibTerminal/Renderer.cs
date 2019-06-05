@@ -136,9 +136,10 @@ namespace RogueLibTerminal
 	        // TODO release unmanaged resources here
 	        foreach (var cachedTexture in _cachedTextures)
 	        {
-		        var ptr = cachedTexture.Value.GetAsPointer();
-				SDL_DestroyTexture(ptr);
+		        cachedTexture.Value.Dispose();
 	        }
+
+			_cachedTextures.Clear();
 
 			SDL_DestroyRenderer(_renderer);
         }

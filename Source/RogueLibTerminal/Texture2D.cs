@@ -2,7 +2,7 @@
 
 namespace RogueLibTerminal
 {
-    public class Texture2D
+    public class Texture2D: IDisposable
     {
         public int Width { get; set; }
         public int Height { get; set; }
@@ -25,6 +25,23 @@ namespace RogueLibTerminal
         internal IntPtr GetAsPointer()
         {
 	        return _dataPtr;
+        }
+
+        private void ReleaseUnmanagedResources()
+        {
+	        // TODO release unmanaged resources here
+			SDL2.SDL.SDL_DestroyTexture(_dataPtr);
+        }
+
+        public void Dispose()
+        {
+	        ReleaseUnmanagedResources();
+	        GC.SuppressFinalize(this);
+        }
+
+        ~Texture2D()
+        {
+	        ReleaseUnmanagedResources();
         }
     }
 }

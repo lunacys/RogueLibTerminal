@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using RogueLibTerminal.Logging;
 using static SDL2.SDL;
 using static SDL2.SDL_ttf;
 
@@ -16,8 +18,18 @@ namespace RogueLibTerminal
 		}
 
 		public static SpriteFont LoadFromFile(string filename, int ptSize)
-		{
-			return new SpriteFont(TTF_OpenFont(filename, ptSize), ptSize);
+        {
+            if (!File.Exists(filename))
+                throw new FileNotFoundException();
+
+            LogHelper.Log($"[RogueLibTerminal.SpriteFont]: Loading font '{filename}' with size {ptSize}");
+
+            IntPtr fontPtr = TTF_OpenFont(filename, ptSize);
+
+            if (fontPtr == IntPtr.Zero)
+                throw new NullReferenceException($"Failed loading font '{filename}'");
+
+            return new SpriteFont(fontPtr, ptSize);
 		}
 
 		private void ReleaseUnmanagedResources()

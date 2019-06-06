@@ -96,8 +96,8 @@ namespace RogueLibTerminal
             LogHelper.Log("[RogueLibTerminal.Window]: Creating a new window..");
 
             _windowPtr = SDL_CreateWindow(Title,
-                Position?.X ?? SDL_WINDOWPOS_CENTERED,
-                Position?.Y ?? SDL_WINDOWPOS_CENTERED,
+                SDL_WINDOWPOS_CENTERED,
+                SDL_WINDOWPOS_CENTERED,
                 Width,
                 Height,
                 IsResizable

@@ -131,6 +131,11 @@ namespace RogueLibTerminal
 			SDL_RenderPresent(_renderer);
         }
 
+        public void Clear(TerminalColor color)
+        {
+            SDL_RenderClear(_renderer);
+        }
+
         private void ReleaseUnmanagedResources()
         {
 	        // TODO release unmanaged resources here

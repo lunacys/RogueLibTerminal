@@ -8,7 +8,7 @@ namespace RogueLibTerminal
     {
         private IntPtr _renderer;
         public WindowInternal Window { get; }
-        public bool IsInitialized { get; private set; }
+        internal bool IsInitialized { get; private set; }
 
         public RendererInternal(WindowInternal window)
         {

@@ -10,7 +10,7 @@ namespace RogueLibTerminal
     {
         private IntPtr _renderer;
         internal Window Window { get; }
-        public bool IsInitialized { get; private set; }
+        internal bool IsInitialized { get; private set; }
 
 		private Dictionary<string, Texture2D> _cachedTextures = new Dictionary<string, Texture2D>();
 

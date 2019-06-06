@@ -25,7 +25,7 @@ namespace RogueLibTerminal.Logging
             {
                 _activeLoggers.Clear();
 
-                if (value == LogTarget.None || value.HasFlag(LogTarget.None))
+                if (value == LogTarget.None)
                 {
                     _activeLoggers.Add(new QueueLogger());
                     // TODO: Implement post factum logging to selected target(s) if this getter is called
